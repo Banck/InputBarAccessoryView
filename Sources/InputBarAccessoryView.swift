@@ -445,7 +445,14 @@ open class InputBarAccessoryView: UIView {
     
     /// Sets up the initial constraints of each subview
     private func setupConstraints() {
-        
+        var bottomLayoutAnchor: NSLayoutAnchor = bottomAnchor
+        var leftLayoutAnchor: NSLayoutAnchor = leftAnchor
+        var rightLayoutAnchor: NSLayoutAnchor = rightAnchor
+        if #available(iOS 11.0, *) {
+            bottomLayoutAnchor = safeAreaLayoutGuide.bottomAnchor
+            leftLayoutAnchor = safeAreaLayoutGuide.leftAnchor
+            rightLayoutAnchor = safeAreaLayoutGuide.rightAnchor
+        }
         // The constraints within the InputBarAccessoryView
         separatorLine.addConstraints(topAnchor, left: backgroundView.leftAnchor, right: backgroundView.rightAnchor, heightConstant: separatorLine.height)
 
@@ -459,15 +466,15 @@ open class InputBarAccessoryView: UIView {
         topStackViewLayoutSet = NSLayoutConstraintSet(
             top:    topStackView.topAnchor.constraint(equalTo: topAnchor, constant: topStackViewPadding.top),
             bottom: topStackView.bottomAnchor.constraint(equalTo: contentView.topAnchor, constant: -padding.top),
-            left:   topStackView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: topStackViewPadding.left + frameInsets.left),
-            right:  topStackView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -(topStackViewPadding.right + frameInsets.right))
+            left:   topStackView.leftAnchor.constraint(equalTo: leftLayoutAnchor, constant: topStackViewPadding.left + frameInsets.left),
+            right:  topStackView.rightAnchor.constraint(equalTo: rightLayoutAnchor, constant: -(topStackViewPadding.right + frameInsets.right))
         )
         
         contentViewLayoutSet = NSLayoutConstraintSet(
             top:    contentView.topAnchor.constraint(equalTo: topStackView.bottomAnchor, constant: padding.top),
-            bottom: contentView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -padding.bottom),
-            left:   contentView.leftAnchor.constraint(equalTo: safeAreaLayoutGuide.leftAnchor, constant: padding.left + frameInsets.left),
-            right:  contentView.rightAnchor.constraint(equalTo: safeAreaLayoutGuide.rightAnchor, constant: -(padding.right + frameInsets.right))
+            bottom: contentView.bottomAnchor.constraint(equalTo: bottomLayoutAnchor, constant: -padding.bottom),
+            left:   contentView.leftAnchor.constraint(equalTo: leftLayoutAnchor, constant: padding.left + frameInsets.left),
+            right:  contentView.rightAnchor.constraint(equalTo: rightLayoutAnchor, constant: -(padding.right + frameInsets.right))
         )
 
         // Constraints Within the contentView
@@ -509,7 +516,7 @@ open class InputBarAccessoryView: UIView {
     ///
     /// - Parameter window: The window to anchor to
     private func setupConstraints(to window: UIWindow?) {
-        guard let window = window, window.safeAreaInsets.bottom > 0 else { return }
+        guard #available(iOS 11.0, *), let window = window, window.safeAreaInsets.bottom > 0 else { return }
         windowAnchor?.isActive = false
         windowAnchor = contentView.bottomAnchor.constraint(lessThanOrEqualToSystemSpacingBelow: window.safeAreaLayoutGuide.bottomAnchor, multiplier: 1)
         windowAnchor?.constant = -padding.bottom
